@@ -405,6 +405,20 @@ $('.s-single-services').on('mouseenter', function () {
 
 });
 // isotop
+
+// Meta Pixel click tracking (menu + WhatsApp)
+document.addEventListener('click', function (event) {
+	var target = event.target.closest('[data-fbq-event]');
+	if (!target) {
+		return;
+	}
+
+	if (typeof fbq === 'function') {
+		fbq('trackCustom', target.dataset.fbqEvent, {
+			label: target.dataset.fbqLabel || target.textContent.trim()
+		});
+	}
+});
 $(".element").each(function() {
     var a = $(this);
     a.typed({
