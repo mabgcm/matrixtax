@@ -132,6 +132,17 @@ h1 {
 	font-weight: 700;
 }
 
+/* Classy title background for blog breadcrumb */
+.classy-title {
+	display: inline-block;
+	padding: 12px 24px;
+	border-radius: 12px;
+	background: linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.75));
+	box-shadow: 0 10px 30px rgba(16, 24, 40, 0.18);
+	border: 1px solid rgba(255, 255, 255, 0.65);
+	backdrop-filter: blur(4px);
+}
+
 h2 {
 	font-size: 35px;
 }
@@ -146,6 +157,71 @@ h4 {
 
 h5 {
 	font-size: 18px;
+}
+
+/* Larger, more readable blog post content */
+.blog-article .details__content p,
+.blog-article .details__content li {
+	font-size: 18px;
+	line-height: 1.8;
+}
+
+.blog-article .details__content ul {
+	list-style: none;
+	padding-left: 0;
+	margin-left: 0;
+}
+
+.blog-article .details__content ul li {
+	position: relative;
+	padding-left: 24px;
+}
+
+.blog-article .details__content ul li::before {
+	content: "";
+	position: absolute;
+	left: 0;
+	top: 0.75em;
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	background: #1e63ff;
+	box-shadow: 0 0 0 4px rgba(30, 99, 255, 0.18);
+}
+
+.blog-article .details__content h2 {
+	font-size: 34px;
+	line-height: 1.35;
+}
+
+.blog-article .details__content h3 {
+	font-size: 26px;
+	line-height: 1.4;
+}
+
+.blog-article .details__content h4 {
+	font-size: 22px;
+	line-height: 1.45;
+}
+
+@media (max-width: 767.98px) {
+	.blog-article .details__content p,
+	.blog-article .details__content li {
+		font-size: 19px;
+		line-height: 1.9;
+	}
+
+	.blog-article .details__content h2 {
+		font-size: 30px;
+	}
+
+	.blog-article .details__content h3 {
+		font-size: 24px;
+	}
+
+	.blog-article .details__content h4 {
+		font-size: 20px;
+	}
 }
 
 h6 {
@@ -289,24 +365,29 @@ label {
 	margin-left: 0px;
 }
 
-/* scrollUp */
-#scrollUp {
-	background: #f3525a;
-	height: 45px;
-	width: 45px;
+/* WhatsApp floating button */
+.whatsapp-float {
+	background: #25d366;
+	height: 52px;
+	width: 52px;
 	right: 50px;
 	bottom: 77px;
 	color: #fff;
-	font-size: 20px;
+	font-size: 26px;
 	text-align: center;
 	border-radius: 50%;
-	font-size: 22px;
-	line-height: 45px;
-	transition: .3s;
+	line-height: 52px;
+	position: fixed;
+	z-index: 999;
+	box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18);
+	transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 
-#scrollUp:hover {
-	background: #f3525a;
+.whatsapp-float:hover {
+	background: #1ebe57;
+	color: #fff;
+	transform: translateY(-2px);
+	box-shadow: 0 10px 22px rgba(0, 0, 0, 0.22);
 }
 
 /* 2. header */
