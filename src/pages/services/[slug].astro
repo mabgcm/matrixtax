@@ -41,7 +41,7 @@ const crumbs = [
   schema={[serviceSchema(title, description, path), breadcrumbSchema(crumbs)]}
 >
   <PageHeader eyebrow="Services" title={title} lead={summary} crumbs={crumbs}>
-    <div class="mt-9 flex flex-col gap-3 sm:flex-row">
+    <div class="mt-9 flex flex-col gap-3 sm:flex-row print:hidden">
       <a href="/contact" class="btn btn-primary group">
         Book a free consultation
         <ArrowRight size={18} class="transition-transform group-hover:translate-x-0.5" />
@@ -84,7 +84,7 @@ const crumbs = [
       </div>
     </div>
 
-    <aside class="lg:col-span-4" aria-label="Get help">
+    <aside class="lg:col-span-4 print:hidden" aria-label="Get help">
       <div class="space-y-6 lg:sticky lg:top-28">
         <div class="card overflow-hidden">
           <div class="bg-brand-900 p-6 text-white sm:p-7">

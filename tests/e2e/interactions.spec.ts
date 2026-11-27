@@ -174,3 +174,26 @@ base.describe('advertising consent', () => {
     await expect(page.getByRole('region', { name: 'Your privacy' })).toBeVisible();
   });
 });
+
+test.describe('without JavaScript', () => {
+  test.use({ javaScriptEnabled: false });
+
+  test('content, navigation and the contact form still work', async ({ page, isMobile }) => {
+    await page.goto('/');
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Frequently asked questions' })).toBeAttached();
+
+    if (isMobile) {
+      // Native popover: opens without any script.
+      await page.getByRole('button', { name: 'Open menu' }).click();
+      await expect(page.locator('#mobile-menu')).toBeVisible();
+    }
+
+    await page.goto('/contact');
+    const form = page.locator('form[data-contact-form]');
+    await expect(form).toHaveAttribute('action', '/api/contact');
+    await expect(form).toHaveAttribute('method', 'post');
+    // Native validation stays on when the enhancement script is absent.
+    expect(await form.evaluate((element: HTMLFormElement) => element.noValidate)).toBe(false);
+  });
+});

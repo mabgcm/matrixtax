@@ -7,7 +7,7 @@ import Footer from '@/components/layout/Footer.astro';
 import MobileActionBar from '@/components/layout/MobileActionBar.astro';
 import WhatsAppButton from '@/components/layout/WhatsAppButton.astro';
 import ConsentBanner from '@/components/layout/ConsentBanner.astro';
-import { site } from '@/config/site';
+import { formattedAddress, site } from '@/config/site';
 
 type Props = SEOProps;
 
@@ -47,6 +47,11 @@ const chromeLang = props.lang === 'tr' ? 'en' : undefined;
     </main>
     <div lang={chromeLang} class="contents">
       <Footer />
+      <!-- Printed pages replace the dark footer with a plain contact line. -->
+      <p class="container-page hidden border-t border-slate-300 pt-4 text-sm text-slate-700 print:block">
+        {site.legalName} · {site.phones.primary.display} · {site.emails.primary} ·{' '}
+        {formattedAddress} · {site.url.replace('https://', '')}
+      </p>
       <MobileActionBar />
       <WhatsAppButton />
       <ConsentBanner />

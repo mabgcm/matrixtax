@@ -296,3 +296,31 @@ details.faq-item[open]::details-content {
 details.faq-item > summary::-webkit-details-marker {
   display: none;
 }
+
+/* ---------------------------------------------------------------------------
+ * Print: guides and service pages are worth printing. Drop interactive chrome
+ * and make sure scroll-driven reveals never leave content invisible on paper.
+ * ------------------------------------------------------------------------- */
+@media print {
+  .site-header,
+  .mobile-menu,
+  #consent-banner,
+  [data-print-hidden] {
+    display: none !important;
+  }
+
+  .reveal,
+  .site-header {
+    animation: none !important;
+  }
+
+  body {
+    padding-bottom: 0 !important;
+  }
+
+  .prose a[href^='http']::after {
+    content: ' (' attr(href) ')';
+    font-size: 0.85em;
+    color: var(--color-slate-500);
+  }
+}

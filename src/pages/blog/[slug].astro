@@ -106,7 +106,7 @@ const cta =
       </div>
 
       <aside
-        class="relative mt-16 overflow-hidden rounded-3xl bg-brand-900 p-7 text-white sm:p-10"
+        class="relative mt-16 overflow-hidden rounded-3xl bg-brand-900 p-7 text-white sm:p-10 print:hidden"
         aria-labelledby="post-cta-title"
       >
         <p id="post-cta-title" class="font-display text-2xl font-bold">
@@ -144,7 +144,11 @@ const cta =
   </article>
 
   {related.length > 0 && (
-    <section class="bg-slate-50 py-16 sm:py-20" aria-labelledby="related-title" lang="en">
+    <section
+      class="bg-slate-50 py-16 sm:py-20 print:hidden"
+      aria-labelledby="related-title"
+      lang="en"
+    >
       <div class="container-page">
         <h2 id="related-title" class="text-2xl sm:text-3xl">
           More from the blog
