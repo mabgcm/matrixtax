@@ -1,0 +1,24 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Contact from '@/components/sections/Contact.astro';
+import Breadcrumbs from '@/components/ui/Breadcrumbs.astro';
+import { breadcrumbSchema } from '@/lib/seo';
+
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Contact', path: '/contact' },
+];
+---
+
+<BaseLayout
+  title="Contact Us — Book a Free Consultation"
+  description="Contact Matrix Tax Solutions in Barrie, Ontario. Call, text or WhatsApp (647) 675-5220, email us, or send a message to book a free consultation."
+  schema={[breadcrumbSchema(crumbs)]}
+>
+  <div class="bg-slate-50">
+    <div class="container-page pt-8 sm:pt-12">
+      <Breadcrumbs crumbs={crumbs} />
+    </div>
+  </div>
+  <Contact headingLevel="h1" class="pt-8 sm:pt-10 lg:pt-12" />
+</BaseLayout>

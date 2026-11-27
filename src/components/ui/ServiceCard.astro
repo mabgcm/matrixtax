@@ -1,0 +1,41 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { ArrowRight, Check } from '@lucide/astro';
+import ServiceIcon from '@/components/ui/ServiceIcon.astro';
+
+interface Props {
+  service: CollectionEntry<'services'>;
+  headingLevel?: 'h2' | 'h3';
+}
+
+const { service, headingLevel = 'h3' } = Astro.props;
+const { title, summary, highlights, icon } = service.data;
+const Heading = headingLevel;
+---
+
+<article class="group card relative flex h-full flex-col p-6 transition duration-300 hover:-translate-y-1 hover:shadow-lift sm:p-8">
+  <div class="flex items-center gap-4 sm:block">
+    <span class="grid size-12 shrink-0 place-items-center rounded-2xl bg-brand-50 text-brand-600 ring-1 ring-brand-100 transition-colors duration-300 group-hover:bg-brand-600 group-hover:text-white group-hover:ring-brand-600 sm:size-14">
+      <ServiceIcon name={icon} size={26} />
+    </span>
+    <Heading class="text-lg leading-snug sm:mt-6 sm:text-2xl">
+      <a href={`/services/${service.id}`} class="after:absolute after:inset-0 after:rounded-3xl">
+        {title}
+      </a>
+    </Heading>
+  </div>
+  <p class="mt-4 leading-relaxed sm:mt-3">{summary}</p>
+  <!-- Full checklist on larger screens; the detail page carries it on mobile. -->
+  <ul class="mt-6 hidden space-y-2.5 sm:block">
+    {highlights.map((item) => (
+      <li class="flex gap-3 text-[0.95rem] text-slate-700">
+        <Check size={18} class="mt-0.5 shrink-0 text-brand-600" />
+        {item}
+      </li>
+    ))}
+  </ul>
+  <span class="link-arrow mt-auto pt-5 sm:pt-7" aria-hidden="true">
+    Learn more
+    <ArrowRight size={18} class="transition-transform group-hover:translate-x-1" />
+  </span>
+</article>

@@ -1,0 +1,55 @@
+---
+const steps = [
+  {
+    title: 'Reach out',
+    text: 'Call, text, WhatsApp or send us a message — whichever is easiest for you.',
+  },
+  {
+    title: 'Free consultation',
+    text: 'We learn about your situation and goals, and explain exactly how we can help.',
+  },
+  {
+    title: 'We get to work',
+    text: 'We prepare your returns, books or filings accurately and on time, and keep you informed.',
+  },
+  {
+    title: 'Ongoing support',
+    text: 'We are here year-round for questions, planning and anything the CRA sends your way.',
+  },
+];
+---
+
+<section id="process" class="section" aria-labelledby="process-title">
+  <div class="container-page">
+    <div class="mx-auto max-w-2xl text-center">
+      <p class="eyebrow">How we work</p>
+      <h2 id="process-title" class="section-title">
+        Simple, clear and stress-free
+      </h2>
+      <p class="lead mt-5">
+        Getting started takes one conversation. From there, we handle the details and keep you in
+        the loop.
+      </p>
+    </div>
+
+    <div class="relative mt-14">
+      <div
+        aria-hidden="true"
+        class="absolute top-7 right-[12%] left-[12%] hidden h-px bg-linear-to-r from-brand-200 via-brand-300 to-brand-200 lg:block"
+      ></div>
+      <ol class="relative grid gap-6 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
+        {steps.map((step, index) => (
+          <li class="reveal relative flex gap-5 rounded-3xl bg-white p-5 ring-1 ring-slate-900/5 sm:flex-col sm:gap-0 sm:p-6 lg:items-center lg:bg-transparent lg:p-0 lg:text-center lg:ring-0">
+            <span class="relative grid size-12 shrink-0 place-items-center rounded-2xl bg-brand-600 font-display text-lg font-extrabold text-white shadow-[0_10px_24px_-10px_var(--color-brand-600)] sm:size-14">
+              {String(index + 1).padStart(2, '0')}
+            </span>
+            <div>
+              <h3 class="text-lg sm:mt-5 sm:text-xl">{step.title}</h3>
+              <p class="mt-1.5 leading-relaxed sm:mt-2 lg:max-w-[16rem]">{step.text}</p>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </div>
+</section>

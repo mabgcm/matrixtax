@@ -1,0 +1,28 @@
+---
+import { Compass } from '@lucide/astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import StatusPage from '@/components/sections/StatusPage.astro';
+---
+
+<BaseLayout
+  title="Page Not Found"
+  description="The page you are looking for does not exist or has moved."
+  noindex
+>
+  <StatusPage
+    tone="neutral"
+    title="We couldn't find that page"
+    text="It may have moved, or the link might be out of date. Here are some good places to start."
+  >
+    <Compass slot="icon" size={32} />
+    <a href="/" class="btn btn-primary">
+      Go to the homepage
+    </a>
+    <a href="/services" class="btn btn-secondary">
+      Our services
+    </a>
+    <a href="/contact" class="btn btn-secondary">
+      Contact us
+    </a>
+  </StatusPage>
+</BaseLayout>

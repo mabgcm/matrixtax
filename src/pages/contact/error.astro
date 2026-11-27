@@ -1,0 +1,55 @@
+---
+// Shown to visitors without JavaScript when a form submission fails
+// (the API answers plain HTML form posts with a 303 redirect here).
+import { Mail, Phone, TriangleAlert } from '@lucide/astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import StatusPage from '@/components/sections/StatusPage.astro';
+import WhatsAppIcon from '@/components/ui/WhatsAppIcon.astro';
+import { site } from '@/config/site';
+---
+
+<BaseLayout
+  title="Message Not Sent"
+  description="We could not send your message. Please try again or contact us directly."
+  noindex
+>
+  <StatusPage
+    tone="error"
+    title="We couldn't send your message"
+    text="Please check your details and try again in a few minutes — or reach us directly using one of the options below."
+  >
+    <TriangleAlert slot="icon" size={32} />
+    <a href="/contact" class="btn btn-primary">
+      Try again
+    </a>
+    <a
+      href={site.links.call}
+      data-track="call"
+      data-track-location="error-page"
+      class="btn btn-secondary"
+    >
+      <Phone size={18} class="text-brand-600" />
+      {site.phones.primary.display}
+    </a>
+    <a
+      href={site.links.whatsapp}
+      target="_blank"
+      rel="noopener noreferrer"
+      data-track="whatsapp"
+      data-track-location="error-page"
+      class="btn btn-whatsapp"
+    >
+      <WhatsAppIcon size={18} />
+      WhatsApp
+    </a>
+    <a
+      href={site.links.email}
+      data-track="email"
+      data-track-location="error-page"
+      class="btn btn-secondary"
+    >
+      <Mail size={18} class="text-brand-600" />
+      Email us
+    </a>
+  </StatusPage>
+</BaseLayout>

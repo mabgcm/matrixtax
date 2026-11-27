@@ -1,0 +1,166 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { render } from 'astro:content';
+import { getImage, Picture } from 'astro:assets';
+import { ArrowRight, Phone } from '@lucide/astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumbs from '@/components/ui/Breadcrumbs.astro';
+import PostCard from '@/components/ui/PostCard.astro';
+import WhatsAppIcon from '@/components/ui/WhatsAppIcon.astro';
+import { site } from '@/config/site';
+import { formatDate, getPublishedPosts, postUi, readingMinutes, type Post } from '@/lib/content';
+import { absoluteUrl, articleSchema, breadcrumbSchema } from '@/lib/seo';
+
+export const getStaticPaths = (async () => {
+  const posts = await getPublishedPosts();
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+}) satisfies GetStaticPaths;
+
+interface Props {
+  post: Post;
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+const { title, seoTitle, description, pubDate, updatedDate, lang, heroImage, heroAlt, tags } =
+  post.data;
+const t = postUi(lang);
+const path = `/blog/${post.id}`;
+
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Blog', path: '/blog' },
+  { name: title, path },
+];
+
+const related = (await getPublishedPosts()).filter((other) => other.id !== post.id).slice(0, 2);
+const ogImage = await getImage({ src: heroImage, width: 1200, format: 'jpg' });
+
+const cta =
+  lang === 'tr'
+    ? {
+        title: 'Profesyonel desteğe mi ihtiyacınız var?',
+        text: 'Vergi, muhasebe ve işletme süreçleriniz için ücretsiz ön görüşme planlayalım. Türkçe hizmet veriyoruz.',
+        book: 'Ön görüşme planlayın',
+      }
+    : {
+        title: 'Need a hand with this?',
+        text: 'Book a free consultation and we will walk you through your options.',
+        book: 'Book a consultation',
+      };
+---
+
+<BaseLayout
+  title={seoTitle ?? title}
+  description={description}
+  lang={lang}
+  image={heroImage}
+  imageAlt={heroAlt}
+  type="article"
+  article={{ published: pubDate, modified: updatedDate, tags }}
+  schema={[
+    articleSchema({
+      title,
+      description,
+      path,
+      imageUrl: absoluteUrl(ogImage.src),
+      published: pubDate,
+      modified: updatedDate,
+      lang,
+    }),
+    breadcrumbSchema(crumbs),
+  ]}
+>
+  <article>
+    <header class="bg-linear-to-b from-brand-50 to-white">
+      <div class="container-page max-w-4xl pt-8 pb-10 sm:pt-12">
+        <Breadcrumbs crumbs={crumbs} />
+        <h1 class="mt-10 text-3xl leading-[1.15] sm:text-5xl">{title}</h1>
+        <p class="mt-6 flex flex-wrap items-center gap-x-3 gap-y-1 text-slate-500">
+          <time datetime={pubDate.toISOString()}>{formatDate(pubDate, lang)}</time>
+          <span aria-hidden="true">·</span>
+          <span>{t.minRead(readingMinutes(post.body))}</span>
+          <span aria-hidden="true" class="hidden sm:inline">
+            ·
+          </span>
+          <span class="hidden sm:inline">{site.name}</span>
+        </p>
+      </div>
+    </header>
+
+    <div class="container-page max-w-5xl">
+      <Picture
+        src={heroImage}
+        formats={['avif', 'webp']}
+        alt={heroAlt}
+        widths={[640, 960, 1280]}
+        sizes="(min-width: 1024px) 64rem, 100vw"
+        priority
+        class="aspect-video h-auto w-full rounded-3xl object-cover shadow-card sm:rounded-[2rem]"
+      />
+    </div>
+
+    <div class="container-page max-w-3xl py-12 sm:py-16">
+      <div class="prose prose-lg max-w-none prose-slate prose-headings:font-display prose-headings:tracking-tight prose-h2:mt-14 prose-h2:text-[1.75rem] prose-h3:text-xl prose-a:text-brand-700 prose-strong:text-slate-900 prose-li:marker:text-brand-500">
+        <Content />
+      </div>
+
+      <aside
+        class="relative mt-16 overflow-hidden rounded-3xl bg-brand-900 p-7 text-white sm:p-10 print:hidden"
+        aria-labelledby="post-cta-title"
+      >
+        <p id="post-cta-title" class="font-display text-2xl font-bold">
+          {cta.title}
+        </p>
+        <p class="mt-3 max-w-xl text-brand-100">{cta.text}</p>
+        <div class="mt-7 flex flex-col gap-3 sm:flex-row">
+          <a href="/contact" class="btn btn-on-dark group">
+            {cta.book}
+            <ArrowRight size={18} class="transition-transform group-hover:translate-x-0.5" />
+          </a>
+          <a
+            href={site.links.whatsapp}
+            target="_blank"
+            rel="noopener noreferrer"
+            data-track="whatsapp"
+            data-track-location="post-cta"
+            class="btn btn-outline-on-dark"
+          >
+            <WhatsAppIcon size={18} />
+            WhatsApp
+          </a>
+          <a
+            href={site.links.call}
+            data-track="call"
+            data-track-location="post-cta"
+            class="btn btn-outline-on-dark"
+          >
+            <Phone size={18} />
+            {site.phones.primary.display}
+          </a>
+        </div>
+      </aside>
+    </div>
+  </article>
+
+  {related.length > 0 && (
+    <section
+      class="bg-slate-50 py-16 sm:py-20 print:hidden"
+      aria-labelledby="related-title"
+      lang="en"
+    >
+      <div class="container-page">
+        <h2 id="related-title" class="text-2xl sm:text-3xl">
+          More from the blog
+        </h2>
+        <ul class="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {related.map((other) => (
+            <li>
+              <PostCard post={other} />
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )}
+</BaseLayout>

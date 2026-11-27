@@ -1,0 +1,342 @@
+@import 'tailwindcss';
+@plugin '@tailwindcss/typography';
+
+/* ---------------------------------------------------------------------------
+ * Design tokens
+ * Brand blue (#3272b9) and steel grey (#7c8590) are sampled from the logo.
+ * ------------------------------------------------------------------------- */
+@theme {
+  --font-sans:
+    ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-display: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+
+  --color-brand-50: #f0f5fb;
+  --color-brand-100: #dde8f6;
+  --color-brand-200: #c0d4ee;
+  --color-brand-300: #95b8e2;
+  --color-brand-400: #6395d2;
+  --color-brand-500: #3272b9;
+  --color-brand-600: #2a5f9e;
+  --color-brand-700: #234e82;
+  --color-brand-800: #1f416b;
+  --color-brand-900: #1c3759;
+  --color-brand-950: #11223a;
+
+  --color-steel: #7c8590;
+  --color-whatsapp: #25d366;
+
+  --shadow-card: 0 1px 2px rgb(15 23 42 / 0.04), 0 8px 24px -12px rgb(15 23 42 / 0.12);
+  --shadow-lift: 0 2px 4px rgb(15 23 42 / 0.04), 0 24px 48px -20px rgb(28 55 89 / 0.28);
+
+  --animate-reveal: reveal linear both;
+}
+
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(1.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * Base
+ * ------------------------------------------------------------------------- */
+@layer base {
+  :root {
+    color-scheme: light;
+    interpolate-size: allow-keywords;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 6rem;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-white font-sans text-base text-slate-600 antialiased;
+    font-optical-sizing: auto;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-display font-bold tracking-tight text-slate-900;
+    text-wrap: balance;
+  }
+
+  p,
+  li {
+    text-wrap: pretty;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-brand-500);
+    outline-offset: 3px;
+    border-radius: 0.375rem;
+  }
+
+  ::selection {
+    background: var(--color-brand-200);
+    color: var(--color-brand-950);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+/* Cross-document view transitions: smooth page navigation with zero JS. */
+@view-transition {
+  navigation: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @view-transition {
+    navigation: none;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * Components
+ * ------------------------------------------------------------------------- */
+@layer components {
+  .container-page {
+    @apply mx-auto w-full max-w-7xl px-5 sm:px-6 lg:px-8;
+  }
+
+  .section {
+    @apply py-20 sm:py-24 lg:py-28;
+  }
+
+  .eyebrow {
+    @apply inline-flex items-center gap-2 text-sm font-semibold tracking-wide text-brand-600 uppercase;
+  }
+
+  .eyebrow::before {
+    content: '';
+    @apply h-px w-6 bg-current;
+  }
+
+  .section-title {
+    @apply mt-3 text-3xl leading-tight sm:text-4xl lg:text-[2.75rem];
+  }
+
+  .lead {
+    @apply text-lg leading-relaxed text-slate-600;
+  }
+
+  /* Buttons ---------------------------------------------------------------- */
+  .btn {
+    @apply inline-flex min-h-12 items-center justify-center gap-2 rounded-full px-6 text-[0.95rem] font-semibold whitespace-nowrap transition duration-200 select-none disabled:cursor-not-allowed disabled:opacity-60 aria-disabled:cursor-wait aria-disabled:opacity-70;
+  }
+
+  .btn-primary {
+    @apply bg-brand-600 text-white shadow-[0_8px_20px_-8px_var(--color-brand-600)] hover:-translate-y-0.5 hover:bg-brand-700 active:translate-y-0;
+  }
+
+  .btn-secondary {
+    @apply bg-white text-slate-900 ring-1 ring-slate-200 ring-inset hover:-translate-y-0.5 hover:ring-brand-300 active:translate-y-0;
+  }
+
+  .btn-on-dark {
+    @apply bg-white text-brand-900 hover:-translate-y-0.5 hover:bg-brand-50 active:translate-y-0;
+  }
+
+  .btn-outline-on-dark {
+    @apply text-white ring-1 ring-white/30 ring-inset hover:bg-white/10 hover:ring-white/60;
+  }
+
+  .btn-whatsapp {
+    @apply bg-whatsapp text-[#073e1f] hover:-translate-y-0.5 hover:brightness-105 active:translate-y-0;
+  }
+
+  .link-arrow {
+    @apply inline-flex items-center gap-1.5 font-semibold text-brand-600 transition-colors hover:text-brand-800;
+  }
+
+  /* Cards ------------------------------------------------------------------ */
+  .card {
+    @apply rounded-3xl bg-white shadow-card ring-1 ring-slate-900/5;
+  }
+
+  /* Forms ------------------------------------------------------------------ */
+  .field-label {
+    @apply mb-1.5 block text-sm font-semibold text-slate-800;
+  }
+
+  /* 16px+ font size prevents iOS Safari from zooming into focused inputs. */
+  .field-input {
+    @apply block w-full rounded-xl border-0 bg-white px-4 py-3 text-base text-slate-900 shadow-xs ring-1 ring-slate-300 transition ring-inset placeholder:text-slate-400 focus:ring-2 focus:ring-brand-500 focus:outline-none aria-invalid:ring-2 aria-invalid:ring-red-500;
+  }
+
+  .field-select {
+    @apply appearance-none bg-no-repeat pr-11;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-position: right 0.9rem center;
+    background-size: 1.25rem;
+  }
+
+  .field-error {
+    @apply mt-1.5 text-sm font-medium text-red-600;
+  }
+
+  /* Scroll-driven reveal; content stays fully visible where unsupported. */
+  .reveal {
+    @supports (animation-timeline: view()) {
+      @media (prefers-reduced-motion: no-preference) {
+        animation: var(--animate-reveal);
+        animation-timeline: view();
+        animation-range: entry 0% entry 35%;
+      }
+    }
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * Header: gains a hairline + shadow once the page scrolls (no JS).
+ * ------------------------------------------------------------------------- */
+@keyframes header-elevate {
+  to {
+    background-color: rgb(255 255 255 / 0.94);
+    box-shadow:
+      0 1px 0 rgb(15 23 42 / 0.06),
+      0 10px 30px -18px rgb(15 23 42 / 0.25);
+  }
+}
+
+@supports (animation-timeline: scroll()) {
+  .site-header {
+    animation: header-elevate linear both;
+    animation-timeline: scroll();
+    animation-range: 0 96px;
+  }
+}
+
+@supports not (animation-timeline: scroll()) {
+  .site-header {
+    box-shadow: 0 1px 0 rgb(15 23 42 / 0.06);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * Mobile menu (native popover): full-screen sheet with enter/exit motion.
+ * ------------------------------------------------------------------------- */
+.mobile-menu {
+  /* Hidden unless open. Without this, browsers lacking the Popover API (e.g.
+     iOS 16) would render an invisible full-screen layer that swallows taps. */
+  display: none;
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  max-width: none;
+  height: 100dvh;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: white;
+  color: inherit;
+  opacity: 0;
+  transform: translateY(-0.75rem);
+  transition:
+    opacity 0.2s ease,
+    transform 0.25s ease,
+    overlay 0.25s allow-discrete,
+    display 0.25s allow-discrete;
+}
+
+.mobile-menu:popover-open {
+  display: block;
+  opacity: 1;
+  transform: none;
+}
+
+/* Fallback toggled by src/scripts/nav.ts when the Popover API is missing. */
+.mobile-menu.is-open {
+  display: block;
+  opacity: 1;
+  transform: none;
+  z-index: 60;
+}
+
+@starting-style {
+  .mobile-menu:popover-open {
+    opacity: 0;
+    transform: translateY(-0.75rem);
+  }
+}
+
+html:has(.mobile-menu:popover-open) {
+  overflow: hidden;
+}
+
+html:has(.mobile-menu.is-open) {
+  overflow: hidden;
+}
+
+/* ---------------------------------------------------------------------------
+ * Accordion (native <details>) — animated open/close where supported.
+ * ------------------------------------------------------------------------- */
+details.faq-item::details-content {
+  block-size: 0;
+  overflow-y: clip;
+  transition:
+    block-size 0.3s ease,
+    content-visibility 0.3s allow-discrete;
+}
+
+details.faq-item[open]::details-content {
+  block-size: auto;
+}
+
+details.faq-item > summary::-webkit-details-marker {
+  display: none;
+}
+
+/* ---------------------------------------------------------------------------
+ * Print: guides and service pages are worth printing. Drop interactive chrome
+ * and make sure scroll-driven reveals never leave content invisible on paper.
+ * ------------------------------------------------------------------------- */
+@media print {
+  .site-header,
+  .mobile-menu,
+  #consent-banner,
+  [data-print-hidden] {
+    display: none !important;
+  }
+
+  .reveal,
+  .site-header {
+    animation: none !important;
+  }
+
+  body {
+    padding-bottom: 0 !important;
+  }
+
+  .prose a[href^='http']::after {
+    content: ' (' attr(href) ')';
+    font-size: 0.85em;
+    color: var(--color-slate-500);
+  }
+}

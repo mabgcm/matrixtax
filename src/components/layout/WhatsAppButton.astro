@@ -1,0 +1,22 @@
+---
+import WhatsAppIcon from '@/components/ui/WhatsAppIcon.astro';
+import { site } from '@/config/site';
+---
+
+<a
+  data-print-hidden
+  href={site.links.whatsapp}
+  target="_blank"
+  rel="noopener noreferrer"
+  data-track="whatsapp"
+  data-track-location="floating-button"
+  aria-label="Chat with us on WhatsApp"
+  class="group fixed right-6 bottom-6 z-40 hidden items-center gap-3 md:flex"
+>
+  <span class="pointer-events-none translate-x-2 rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-800 opacity-0 shadow-lift ring-1 ring-slate-900/5 transition duration-200 group-hover:translate-x-0 group-hover:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:opacity-100">
+    Chat on WhatsApp
+  </span>
+  <span class="grid size-14 place-items-center rounded-full bg-whatsapp text-white shadow-[0_12px_28px_-10px_rgb(18_140_74/0.7)] transition-transform duration-200 group-hover:scale-105">
+    <WhatsAppIcon size={28} />
+  </span>
+</a>

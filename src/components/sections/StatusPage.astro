@@ -1,0 +1,28 @@
+---
+/** Centered message layout shared by the thank-you, error and 404 pages. */
+interface Props {
+  tone: 'success' | 'error' | 'neutral';
+  title: string;
+  text: string;
+}
+
+const { tone, title, text } = Astro.props;
+const toneClasses = {
+  success: 'bg-emerald-50 text-emerald-600',
+  error: 'bg-red-50 text-red-600',
+  neutral: 'bg-brand-50 text-brand-600',
+};
+---
+
+<section class="relative isolate overflow-hidden bg-linear-to-b from-brand-50 to-white">
+  <div class="container-page flex flex-col items-center py-20 text-center sm:py-28">
+    <span class:list={['grid size-16 place-items-center rounded-full', toneClasses[tone]]}>
+      <slot name="icon" />
+    </span>
+    <h1 class="mt-8 max-w-2xl text-4xl leading-tight sm:text-5xl">{title}</h1>
+    <p class="lead mt-5 max-w-xl">{text}</p>
+    <div class="mt-10 flex w-full flex-col justify-center gap-3 sm:w-auto sm:flex-row">
+      <slot />
+    </div>
+  </div>
+</section>

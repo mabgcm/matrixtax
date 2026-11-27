@@ -1,0 +1,56 @@
+---
+/**
+ * Brand logo: vector mark (traced from the original artwork) + wordmark.
+ * Vector keeps it crisp on every pixel density and lets the footer use a
+ * dark-background variant without a second image file.
+ */
+interface Props {
+  variant?: 'light' | 'dark';
+  class?: string;
+}
+
+const { variant = 'light', class: className } = Astro.props;
+const isDark = variant === 'dark';
+---
+
+<!--
+  The accessible name comes from the visible wordmark ("Matrix Tax Solutions"),
+  so voice-control users can say what they see (WCAG 2.5.3 Label in Name).
+-->
+<a href="/" class:list={['group inline-flex shrink-0 items-center gap-2.5 rounded-lg', className]}>
+  <svg
+    viewBox="108 33 296 445"
+    class="h-10 w-auto shrink-0 transition-transform duration-300 group-hover:-translate-y-0.5"
+    aria-hidden="true"
+    focusable="false"
+  >
+    <g class={isDark ? 'fill-brand-400' : 'fill-brand-500'}>
+      <path d="M112 211 191 263v76l-71 87-8-2z"></path>
+      <path d="m216 125 80 51v167l-7 7-73-39z"></path>
+      <path d="m320 37 79 52v127l-72 89-7 5z"></path>
+    </g>
+    <g class={isDark ? 'fill-slate-400' : 'fill-steel'}>
+      <path d="m137 473 54-67v67z"></path>
+      <path d="m216 376 9-10 71 38v69h-80z"></path>
+      <path d="m320 380 79-96v189h-79z"></path>
+    </g>
+  </svg>
+  <span class="flex flex-col leading-none">
+    <span
+      class:list={[
+        'font-display text-[1.2rem] font-extrabold tracking-[0.3em] uppercase',
+        isDark ? 'text-white' : 'text-steel',
+      ]}
+    >
+      Matrix
+    </span>{' '}
+    <span
+      class:list={[
+        'mt-1 font-display text-[0.64rem] font-bold tracking-[0.17em] uppercase',
+        isDark ? 'text-brand-300' : 'text-brand-500',
+      ]}
+    >
+      Tax Solutions
+    </span>
+  </span>
+</a>

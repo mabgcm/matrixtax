@@ -1,0 +1,53 @@
+---
+import { Cookie } from '@lucide/astro';
+import { PUBLIC_META_PIXEL_ID } from 'astro:env/client';
+---
+
+{PUBLIC_META_PIXEL_ID && (
+  <section
+    id="consent-banner"
+    hidden
+    aria-labelledby="consent-title"
+    class="fixed inset-x-3 bottom-[calc(4.75rem+env(safe-area-inset-bottom))] z-50 rounded-3xl bg-white p-5 shadow-lift ring-1 ring-slate-900/10 md:right-auto md:bottom-6 md:left-6 md:max-w-md"
+  >
+    <div class="flex gap-4">
+      <span class="hidden size-10 shrink-0 place-items-center rounded-full bg-brand-50 text-brand-600 sm:grid">
+        <Cookie size={20} />
+      </span>
+      <div>
+        <h2 id="consent-title" class="text-base font-bold">
+          Your privacy
+        </h2>
+        <p class="mt-1.5 text-sm leading-relaxed">
+          With your permission we use a Meta (Facebook) cookie to measure our advertising. Our site
+          analytics are cookie-free.{' '}
+          <a
+            href="/privacy#cookies"
+            class="font-semibold text-brand-700 underline underline-offset-2"
+          >
+            How we use cookies
+          </a>
+        </p>
+        <p data-consent-gpc hidden class="mt-2 text-sm font-medium text-slate-800">
+          Your browser's Global Privacy Control setting is on, so advertising cookies stay off.
+        </p>
+        <div class="mt-4 flex gap-2">
+          <button
+            type="button"
+            data-consent="granted"
+            class="btn btn-primary min-h-10 px-5 text-sm"
+          >
+            Accept
+          </button>
+          <button
+            type="button"
+            data-consent="denied"
+            class="btn btn-secondary min-h-10 px-5 text-sm"
+          >
+            Decline
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+)}

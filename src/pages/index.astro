@@ -1,0 +1,29 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Hero from '@/components/sections/Hero.astro';
+import Services from '@/components/sections/Services.astro';
+import About from '@/components/sections/About.astro';
+import Process from '@/components/sections/Process.astro';
+import CtaBand from '@/components/sections/CtaBand.astro';
+import Faq from '@/components/sections/Faq.astro';
+import BlogTeaser from '@/components/sections/BlogTeaser.astro';
+import Contact from '@/components/sections/Contact.astro';
+import { site } from '@/config/site';
+import { faq } from '@/data/faq';
+import { faqSchema } from '@/lib/seo';
+---
+
+<BaseLayout
+  title={`${site.name} — Tax & Accounting Services in Barrie, Ontario`}
+  description="Personal and corporate tax, bookkeeping, payroll and business advisory for individuals and small businesses in Barrie, Ontario. Book a free consultation."
+  schema={[faqSchema(faq)]}
+>
+  <Hero />
+  <Services />
+  <About />
+  <Process />
+  <CtaBand />
+  <Faq />
+  <BlogTeaser />
+  <Contact />
+</BaseLayout>
