@@ -31,7 +31,7 @@ accounting practice in Barrie, Ontario.
 ## Getting started
 
 ```bash
-nvm use            # Node 24 (see .nvmrc); Node >= 22.12 is required
+nvm use            # Node 24 (see .nvmrc); Node 22.23+ or 24 is required
 npm install
 cp .env.example .env   # optional; everything works without it locally
 npm run dev            # http://localhost:4321
@@ -138,9 +138,10 @@ suite fails on any CSP violation.
 
 ## Deployment checklist (Vercel)
 
-1. **Framework preset:** Astro. The build command (`npm run build`) and output
+1. **Framework preset:** pinned to Astro in `vercel.json`, so it works even if the project was
+   created as a static ("Other") site. The build command (`npm run build`) and output
    (`.vercel/output`) are detected automatically.
-2. **Node.js version:** 22.x or 24.x.
+2. **Node.js version:** comes from `engines` in `package.json` (Vercel uses Node 24).
 3. **Resend:**
    - Create an account.
    - Verify the `matrixtaxsolutions.ca` domain by adding the DNS records Resend gives you.
