@@ -1,0 +1,119 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/sections/PageHeader.astro';
+import { formattedAddress, site } from '@/config/site';
+import { breadcrumbSchema } from '@/lib/seo';
+
+const lastUpdated = new Date('2026-11-27T00:00:00Z');
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Privacy policy', path: '/privacy' },
+];
+---
+
+<BaseLayout
+  title="Privacy Policy"
+  description="How Matrix Tax Solutions collects, uses and protects personal information on this website, including cookies and your choices."
+  schema={[breadcrumbSchema(crumbs)]}
+>
+  <PageHeader
+    title="Privacy policy"
+    lead={`Last updated ${new Intl.DateTimeFormat('en-CA', { dateStyle: 'long', timeZone: 'UTC' }).format(lastUpdated)}`}
+    crumbs={crumbs}
+  />
+
+  <div class="container-page max-w-3xl pb-20 sm:pb-24">
+    <div class="prose prose-lg max-w-none prose-slate prose-headings:font-display prose-headings:tracking-tight prose-h2:mt-12 prose-h2:text-2xl prose-a:text-brand-700">
+      <p>
+        {site.legalName} (“we”, “us”) respects your privacy. This policy explains what personal
+        information we collect through this website, how we use it, and the choices you have. It
+        applies to this website only; information you share with us as a client is handled under our
+        client engagement terms.
+      </p>
+
+      <h2>Information you give us</h2>
+      <p>
+        When you use our contact form we collect your name, email address, optional phone number,
+        the service you are interested in and your message. If you call, text, WhatsApp or email us,
+        we receive the information you choose to share through that channel.
+      </p>
+      <p>
+        We use this information only to respond to your enquiry and, if you become a client, to
+        provide our services. We do not sell personal information.
+      </p>
+
+      <h2>Information collected automatically</h2>
+      <p>
+        We use Vercel Web Analytics to understand how the website is used — for example, which pages
+        are visited, the referring website, and the type of device and browser. It does not use
+        cookies and does not track you across other websites.
+      </p>
+      <p>
+        Our hosting provider also processes technical information, such as IP addresses, to deliver
+        the website securely and to protect it against abuse (for example, limiting repeated form
+        submissions).
+      </p>
+
+      <h2 id="cookies">Advertising cookies and your choices</h2>
+      <p>
+        With your consent, we use the Meta (Facebook) Pixel to measure the effectiveness of our
+        advertising, such as whether someone who saw an ad later contacted us. The Pixel sets
+        cookies and sends information about your visit to Meta Platforms, which processes it under
+        its own privacy policy.
+      </p>
+      <p>
+        The Pixel is never loaded unless you select “Accept” in the cookie banner. If your browser
+        sends a Global Privacy Control signal, we treat it as a refusal. You can change your
+        decision at any time using the “Cookie preferences” link at the bottom of every page.
+      </p>
+
+      <h2>Service providers</h2>
+      <p>We rely on trusted providers that process information on our behalf:</p>
+      <ul>
+        <li>
+          <strong>Vercel</strong> — website hosting and cookie-free analytics.
+        </li>
+        <li>
+          <strong>Resend</strong> — delivery of contact form messages to our inbox.
+        </li>
+        <li>
+          <strong>Meta Platforms</strong> — advertising measurement, only with your consent.
+        </li>
+        <li>
+          <strong>Cloudflare</strong> — spam protection on the contact form, where enabled.
+        </li>
+      </ul>
+      <p>
+        These providers may store or process information outside Canada, including in the United
+        States, where it may be subject to the laws of that country.
+      </p>
+
+      <h2>Retention and security</h2>
+      <p>
+        We keep enquiries only as long as needed to respond to you and to meet our legal and
+        professional record-keeping obligations. We use reasonable administrative, technical and
+        physical safeguards to protect personal information, including encrypted connections (HTTPS)
+        across this website.
+      </p>
+
+      <h2>Your rights</h2>
+      <p>
+        You may ask to access or correct the personal information we hold about you, or withdraw
+        your consent to its use, subject to legal and contractual restrictions. To make a request or
+        ask a question about this policy, contact us at
+        <a href={`mailto:${site.emails.primary}`}>{site.emails.primary}</a> or write to us at{' '}
+        {formattedAddress}.
+      </p>
+      <p>
+        If you are not satisfied with our response, you may contact the Office of the Privacy
+        Commissioner of Canada.
+      </p>
+
+      <h2>Changes to this policy</h2>
+      <p>
+        We may update this policy from time to time. The date at the top of this page shows when it
+        was last changed.
+      </p>
+    </div>
+  </div>
+</BaseLayout>

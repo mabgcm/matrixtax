@@ -1,0 +1,87 @@
+---
+import { getImage } from 'astro:assets';
+import { site } from '@/config/site';
+import { businessSchema, graph, serializeJsonLd, websiteSchema, type JsonLd } from '@/lib/seo';
+import defaultOgImage from '@/assets/og/default.png';
+import portrait from '@/assets/images/advisor-portrait.png';
+
+export interface Props {
+  title: string;
+  description: string;
+  lang?: 'en' | 'tr';
+  /** Social preview image; falls back to the default brand card. */
+  image?: ImageMetadata;
+  imageAlt?: string;
+  type?: 'website' | 'article';
+  noindex?: boolean;
+  /** Page-specific JSON-LD nodes, merged into the site graph. */
+  schema?: JsonLd[];
+  article?: { published: Date; modified?: Date; tags?: string[] };
+}
+
+const {
+  title,
+  description,
+  lang = 'en',
+  image = defaultOgImage,
+  imageAlt = `${site.name} — ${site.tagline}`,
+  type = 'website',
+  noindex = false,
+  schema = [],
+  article,
+} = Astro.props;
+
+const siteUrl = Astro.site ?? new URL(site.url);
+const canonical = new URL(Astro.url.pathname, siteUrl).toString();
+const fullTitle = title.includes(site.name) ? title : `${title} | ${site.name}`;
+
+const og = await getImage({ src: image, width: 1200, format: 'jpg', quality: 82 });
+const ogUrl = new URL(og.src, siteUrl).toString();
+const ogHeight = Math.round((1200 / image.width) * image.height);
+
+const logo = await getImage({ src: portrait, width: 512, format: 'jpg' });
+const structuredData = graph([
+  businessSchema(
+    new URL('/android-chrome-512x512.png', siteUrl).toString(),
+    new URL(logo.src, siteUrl).toString(),
+  ),
+  websiteSchema(),
+  ...schema,
+]);
+---
+
+<title>{fullTitle}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonical} />
+<meta
+  name="robots"
+  content={noindex ? 'noindex, follow' : 'index, follow, max-image-preview:large'}
+/>
+
+<meta property="og:site_name" content={site.name} />
+<meta property="og:type" content={type} />
+<meta property="og:url" content={canonical} />
+<meta property="og:title" content={fullTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:locale" content={lang === 'tr' ? 'tr_TR' : 'en_CA'} />
+<meta property="og:image" content={ogUrl} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content={String(ogHeight)} />
+<meta property="og:image:alt" content={imageAlt} />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={fullTitle} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={ogUrl} />
+{article && (
+  <>
+    <meta property="article:published_time" content={article.published.toISOString()} />
+    {article.modified && (
+      <meta property="article:modified_time" content={article.modified.toISOString()} />
+    )}
+    {article.tags?.map((tag) => (
+      <meta property="article:tag" content={tag} />
+    ))}
+  </>
+)}
+
+<script type="application/ld+json" set:html={serializeJsonLd(structuredData)} />

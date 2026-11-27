@@ -1,0 +1,48 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/sections/PageHeader.astro';
+import ServiceCard from '@/components/ui/ServiceCard.astro';
+import Process from '@/components/sections/Process.astro';
+import CtaBand from '@/components/sections/CtaBand.astro';
+import { breadcrumbSchema, serviceSchema } from '@/lib/seo';
+
+const services = (await getCollection('services')).sort((a, b) => a.data.order - b.data.order);
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Services', path: '/services' },
+];
+---
+
+<BaseLayout
+  title="Tax, Accounting & Business Advisory Services"
+  description="Personal and corporate tax, bookkeeping, payroll, GST/HST, business registration and CRA problem resolution for individuals and small businesses in Barrie, Ontario."
+  schema={[
+    breadcrumbSchema(crumbs),
+    ...services.map((s) => serviceSchema(s.data.title, s.data.description, `/services/${s.id}`)),
+  ]}
+>
+  <PageHeader
+    eyebrow="Our services"
+    title="Tax & accounting services, tailored to you"
+    lead="Whether you're filing a personal return, running payroll for a growing team or responding to the CRA, we provide accurate, proactive support every step of the way."
+    crumbs={crumbs}
+  />
+
+  <section class="container-page pb-20 sm:pb-24" aria-label="Services">
+    <ul class="grid gap-6 md:grid-cols-2">
+      {services.map((service) => (
+        <li>
+          <ServiceCard service={service} headingLevel="h2" />
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <div class="bg-slate-50">
+    <Process />
+  </div>
+  <div class="py-16 sm:py-20">
+    <CtaBand />
+  </div>
+</BaseLayout>

@@ -1,0 +1,36 @@
+---
+import { getCollection } from 'astro:content';
+import { ArrowRight } from '@lucide/astro';
+import ServiceCard from '@/components/ui/ServiceCard.astro';
+
+const services = (await getCollection('services')).sort((a, b) => a.data.order - b.data.order);
+---
+
+<section id="services" class="section" aria-labelledby="services-title">
+  <div class="container-page">
+    <div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+      <div class="max-w-2xl">
+        <p class="eyebrow">What we do</p>
+        <h2 id="services-title" class="section-title">
+          Specialized tax &amp; accounting services
+        </h2>
+        <p class="lead mt-5">
+          From annual returns to monthly books and CRA correspondence, we take care of the details
+          so you can focus on running your life and your business.
+        </p>
+      </div>
+      <a href="/services" class="link-arrow shrink-0">
+        Explore all services
+        <ArrowRight size={18} />
+      </a>
+    </div>
+
+    <ul class="mt-12 grid gap-6 md:grid-cols-2 lg:mt-14">
+      {services.map((service) => (
+        <li class="reveal">
+          <ServiceCard service={service} />
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>

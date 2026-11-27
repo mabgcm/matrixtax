@@ -1,0 +1,44 @@
+---
+import ContactDetails from '@/components/contact/ContactDetails.astro';
+import ContactForm from '@/components/contact/ContactForm.astro';
+
+interface Props {
+  /** Render the heading as the page's <h1> (on /contact) or as a section <h2>. */
+  headingLevel?: 'h1' | 'h2';
+}
+
+const { headingLevel = 'h2' } = Astro.props;
+const Heading = headingLevel;
+---
+
+<section id="contact" class="section bg-slate-50" aria-labelledby="contact-title">
+  <div class="container-page grid gap-12 lg:grid-cols-12 lg:gap-14">
+    <div class="lg:col-span-5">
+      <p class="eyebrow">Contact</p>
+      <Heading
+        id="contact-title"
+        class:list={[
+          'mt-3 leading-tight',
+          headingLevel === 'h1' ? 'text-4xl sm:text-5xl' : 'text-3xl sm:text-4xl lg:text-[2.75rem]',
+        ]}
+      >
+        Get in touch with us
+      </Heading>
+      <p class="lead mt-5">
+        Tell us a little about your situation and we'll schedule a free consultation. Prefer to
+        talk? Call, text or WhatsApp us.
+      </p>
+      <div class="mt-10">
+        <ContactDetails />
+      </div>
+    </div>
+
+    <div class="lg:col-span-7">
+      <div class="card p-6 sm:p-10 lg:sticky lg:top-28">
+        <h2 class="text-2xl">Send us a message</h2>
+        <p class="mt-2 mb-8">All fields are required unless marked optional.</p>
+        <ContactForm />
+      </div>
+    </div>
+  </div>
+</section>

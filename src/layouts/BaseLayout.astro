@@ -1,0 +1,60 @@
+---
+import '@/styles/global.css';
+import { Font } from 'astro:assets';
+import SEO, { type Props as SEOProps } from '@/components/seo/SEO.astro';
+import Header from '@/components/layout/Header.astro';
+import Footer from '@/components/layout/Footer.astro';
+import MobileActionBar from '@/components/layout/MobileActionBar.astro';
+import WhatsAppButton from '@/components/layout/WhatsAppButton.astro';
+import ConsentBanner from '@/components/layout/ConsentBanner.astro';
+import { site } from '@/config/site';
+
+type Props = SEOProps;
+
+const props = Astro.props;
+const lang = props.lang === 'tr' ? 'tr' : 'en-CA';
+// Site chrome is English; mark it so screen readers switch voice on Turkish pages.
+const chromeLang = props.lang === 'tr' ? 'en' : undefined;
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <Font cssVariable="--font-inter" preload={[{ subset: 'latin' }]} />
+    <Font cssVariable="--font-manrope" preload={[{ subset: 'latin' }]} />
+    <SEO {...props} />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="format-detection" content="telephone=no" />
+    <link rel="alternate" type="application/rss+xml" title={`${site.name} blog`} href="/rss.xml" />
+  </head>
+  <body class="flex min-h-dvh flex-col pb-[calc(4rem+env(safe-area-inset-bottom))] md:pb-0">
+    <div lang={chromeLang} class="contents">
+      <a
+        href="#main"
+        class="sr-only z-50 rounded-full bg-brand-700 px-5 py-3 font-semibold text-white focus:not-sr-only focus:fixed focus:top-3 focus:left-3"
+      >
+        Skip to content
+      </a>
+      <Header />
+    </div>
+    <main id="main" class="flex-1">
+      <slot />
+    </main>
+    <div lang={chromeLang} class="contents">
+      <Footer />
+      <MobileActionBar />
+      <WhatsAppButton />
+      <ConsentBanner />
+    </div>
+    <script>
+      import '@/scripts/analytics';
+      import '@/scripts/nav';
+    </script>
+  </body>
+</html>

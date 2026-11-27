@@ -1,0 +1,186 @@
+---
+import { getCollection } from 'astro:content';
+import { PUBLIC_TURNSTILE_SITE_KEY } from 'astro:env/client';
+import { CircleCheck, LoaderCircle, Send } from '@lucide/astro';
+import {
+  FIELD_LIMITS,
+  HONEYPOT_FIELD,
+  OTHER_SERVICE,
+  STARTED_AT_FIELD,
+} from '@/lib/contact/validation';
+import { site } from '@/config/site';
+
+const services = (await getCollection('services')).sort((a, b) => a.data.order - b.data.order);
+const formId = 'contact-form';
+const field = (name: string) => `${formId}-${name}`;
+---
+
+<div>
+  <form
+    id={formId}
+    action="/api/contact"
+    method="post"
+    data-contact-form
+    class="relative space-y-5"
+    aria-describedby={`${formId}-privacy`}
+  >
+    <div class="grid gap-5 sm:grid-cols-2">
+      <div>
+        <label for={field('name')} class="field-label">
+          Full name
+        </label>
+        <input
+          id={field('name')}
+          name="name"
+          type="text"
+          autocomplete="name"
+          required
+          minlength={FIELD_LIMITS.name.min}
+          maxlength={FIELD_LIMITS.name.max}
+          data-required-message="Please enter your name."
+          aria-describedby={field('name-error')}
+          class="field-input"
+        />
+        <p id={field('name-error')} class="field-error" data-error-for="name" hidden></p>
+      </div>
+
+      <div>
+        <label for={field('email')} class="field-label">
+          Email
+        </label>
+        <input
+          id={field('email')}
+          name="email"
+          type="email"
+          inputmode="email"
+          autocomplete="email"
+          required
+          maxlength={FIELD_LIMITS.email.max}
+          data-required-message="Please enter your email address."
+          aria-describedby={field('email-error')}
+          class="field-input"
+        />
+        <p id={field('email-error')} class="field-error" data-error-for="email" hidden></p>
+      </div>
+
+      <div>
+        <label for={field('phone')} class="field-label">
+          Phone <span class="font-normal text-slate-500">(optional)</span>
+        </label>
+        <input
+          id={field('phone')}
+          name="phone"
+          type="tel"
+          inputmode="tel"
+          autocomplete="tel"
+          maxlength={FIELD_LIMITS.phone.max}
+          pattern="[0-9+().\-\s]{7,30}"
+          data-pattern-message="Please enter a valid phone number, or leave it blank."
+          aria-describedby={field('phone-error')}
+          class="field-input"
+        />
+        <p id={field('phone-error')} class="field-error" data-error-for="phone" hidden></p>
+      </div>
+
+      <div>
+        <label for={field('service')} class="field-label">
+          How can we help?
+        </label>
+        <select
+          id={field('service')}
+          name="service"
+          aria-describedby={field('service-error')}
+          class="field-input field-select"
+        >
+          <option value="">Choose a service</option>
+          {services.map((service) => (
+            <option value={service.id}>{service.data.shortTitle}</option>
+          ))}
+          <option value={OTHER_SERVICE}>Something else</option>
+        </select>
+        <p id={field('service-error')} class="field-error" data-error-for="service" hidden></p>
+      </div>
+    </div>
+
+    <div>
+      <label for={field('message')} class="field-label">
+        Message
+      </label>
+      <textarea
+        id={field('message')}
+        name="message"
+        rows="5"
+        required
+        minlength={FIELD_LIMITS.message.min}
+        maxlength={FIELD_LIMITS.message.max}
+        data-required-message="Please tell us a little about how we can help."
+        aria-describedby={field('message-error')}
+        class="field-input resize-y"
+        placeholder="Tell us a little about your situation…"
+      ></textarea>
+      <p id={field('message-error')} class="field-error" data-error-for="message" hidden></p>
+    </div>
+
+    <!-- Spam traps: hidden from people and assistive technology -->
+    <div aria-hidden="true" class="absolute -left-[10000px] size-px overflow-hidden">
+      <label>
+        Leave this field empty
+        <input type="text" name={HONEYPOT_FIELD} tabindex="-1" autocomplete="off" />
+      </label>
+    </div>
+    <input type="hidden" name={STARTED_AT_FIELD} value="" />
+
+    {PUBLIC_TURNSTILE_SITE_KEY && (
+      <div class="cf-turnstile" data-sitekey={PUBLIC_TURNSTILE_SITE_KEY} data-size="flexible" />
+    )}
+
+    <div
+      data-form-status
+      role="alert"
+      hidden
+      class="rounded-2xl bg-red-50 p-4 text-sm font-medium text-red-800 ring-1 ring-red-200"
+    ></div>
+
+    <div class="flex flex-col-reverse gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <p id={`${formId}-privacy`} class="text-sm text-slate-500">
+        We'll only use your details to respond to your enquiry. See our{' '}
+        <a href="/privacy" class="font-medium text-brand-700 underline underline-offset-2">
+          privacy policy
+        </a>
+        .
+      </p>
+      <button type="submit" class="btn btn-primary group w-full shrink-0 sm:w-auto">
+        <span data-submit-label>Send message</span>
+        <Send size={18} class="group-data-busy:hidden" />
+        <LoaderCircle size={18} class="hidden animate-spin group-data-busy:block" />
+      </button>
+    </div>
+  </form>
+
+  <div
+    data-form-success={formId}
+    hidden
+    tabindex="-1"
+    class="flex flex-col items-center py-10 text-center outline-none"
+  >
+    <span class="grid size-16 place-items-center rounded-full bg-emerald-50 text-emerald-600">
+      <CircleCheck size={34} />
+    </span>
+    <h3 class="mt-6 text-2xl">Thank you — your message is on its way</h3>
+    <p class="mt-3 max-w-md leading-relaxed">
+      We'll get back to you as soon as possible. If it's urgent, call us at{' '}
+      <a href={site.links.call} class="font-semibold text-brand-700">
+        {site.phones.primary.display}
+      </a>
+      .
+    </p>
+  </div>
+</div>
+
+{PUBLIC_TURNSTILE_SITE_KEY && (
+  <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer />
+)}
+
+<script>
+  import '@/scripts/contact-form';
+</script>

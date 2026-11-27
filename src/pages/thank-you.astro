@@ -1,0 +1,26 @@
+---
+import { CircleCheck } from '@lucide/astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import StatusPage from '@/components/sections/StatusPage.astro';
+import { site } from '@/config/site';
+---
+
+<BaseLayout
+  title="Thank You"
+  description="Your message has been sent to Matrix Tax Solutions."
+  noindex
+>
+  <StatusPage
+    tone="success"
+    title="Thank you — your message is on its way"
+    text={`We'll get back to you as soon as possible. If it's urgent, call us at ${site.phones.primary.display}.`}
+  >
+    <CircleCheck slot="icon" size={34} />
+    <a href="/" class="btn btn-primary">
+      Back to home
+    </a>
+    <a href="/blog" class="btn btn-secondary">
+      Read our guides
+    </a>
+  </StatusPage>
+</BaseLayout>

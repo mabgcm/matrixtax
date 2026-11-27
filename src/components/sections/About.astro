@@ -1,0 +1,72 @@
+---
+import { Picture, Image } from 'astro:assets';
+import { Eye, HeartHandshake, Scale } from '@lucide/astro';
+import atDesk from '@/assets/images/advisor-at-desk.png';
+import signature from '@/assets/images/signature.png';
+import { site } from '@/config/site';
+
+const values = [
+  { icon: Eye, title: 'Transparency', text: 'Clear, honest advice.' },
+  { icon: Scale, title: 'Integrity', text: 'Accurate, compliant work.' },
+  { icon: HeartHandshake, title: 'Proactive support', text: 'Ahead of every deadline.' },
+];
+---
+
+<section id="about" class="section bg-slate-50" aria-labelledby="about-title">
+  <div class="container-page grid items-center gap-16 lg:grid-cols-2 lg:gap-20">
+    <div class="reveal relative order-last lg:order-first">
+      <div class="overflow-hidden rounded-[2rem] shadow-lift">
+        <Picture
+          src={atDesk}
+          formats={['avif', 'webp']}
+          fallbackFormat="jpg"
+          alt={`${site.advisor.name} reviewing a client's documents at his desk`}
+          widths={[480, 720, 960, 1280]}
+          sizes="(min-width: 1024px) 40vw, 92vw"
+          class="aspect-4/3 h-auto w-full object-cover object-[30%_center]"
+        />
+      </div>
+      <div class="card absolute right-4 -bottom-10 w-52 p-4 sm:right-8 sm:w-60 sm:p-5">
+        <Image src={signature} alt="" width={180} densities={[1, 2]} class="h-auto w-36 sm:w-40" />
+        <p class="mt-2 font-display font-bold text-slate-900">{site.advisor.name}</p>
+        <p class="text-sm text-slate-500">{site.advisor.title}</p>
+      </div>
+    </div>
+
+    <div>
+      <p class="eyebrow">About us</p>
+      <h2 id="about-title" class="section-title">
+        Your trusted partner for tax &amp; accounting
+      </h2>
+      <div class="mt-6 space-y-5 text-[1.05rem] leading-relaxed">
+        <p>
+          At {site.name}, we are dedicated to providing personalized tax, accounting and business
+          services to individuals and small businesses. Our experienced team is committed to helping
+          you navigate the complexities of the Canadian tax system and achieve your financial
+          objectives.
+        </p>
+        <p>
+          We believe in building long-term relationships with our clients through transparency,
+          integrity and proactive support. Whether you need help with tax filing, bookkeeping or
+          business consulting, we are here to guide you every step of the way.
+        </p>
+        <p class="font-medium text-slate-800">
+          Let us handle your numbers, so you can focus on what matters most — growing your business
+          and enjoying peace of mind.
+        </p>
+      </div>
+
+      <ul class="mt-10 grid grid-cols-3 gap-3 sm:gap-4">
+        {values.map(({ icon: Icon, title, text }) => (
+          <li class="rounded-2xl bg-white p-4 ring-1 ring-slate-900/5 sm:p-5">
+            <Icon size={22} class="text-brand-600" />
+            <p class="mt-3 font-display text-sm leading-snug font-bold text-slate-900 sm:text-base">
+              {title}
+            </p>
+            <p class="mt-1 hidden text-sm sm:block">{text}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+</section>

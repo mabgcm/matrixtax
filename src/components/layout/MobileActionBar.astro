@@ -1,0 +1,52 @@
+---
+import { CalendarCheck, MessageSquareText, Phone } from '@lucide/astro';
+import WhatsAppIcon from '@/components/ui/WhatsAppIcon.astro';
+import { site } from '@/config/site';
+
+const itemClass =
+  'flex h-full flex-col items-center justify-center gap-1 text-[0.72rem] font-semibold text-slate-700 active:bg-slate-100';
+---
+
+<nav
+  aria-label="Quick contact"
+  class="fixed inset-x-0 bottom-0 z-40 border-t border-slate-200/80 bg-white/95 pb-[env(safe-area-inset-bottom)] shadow-[0_-8px_24px_-12px_rgb(15_23_42/0.18)] backdrop-blur-xl md:hidden"
+>
+  <ul class="grid h-16 grid-cols-4">
+    <li>
+      <a
+        href={site.links.call}
+        data-track="call"
+        data-track-location="action-bar"
+        class={itemClass}
+      >
+        <Phone size={20} class="text-brand-600" />
+        Call
+      </a>
+    </li>
+    <li>
+      <a href={site.links.sms} data-track="sms" data-track-location="action-bar" class={itemClass}>
+        <MessageSquareText size={20} class="text-brand-600" />
+        Text
+      </a>
+    </li>
+    <li>
+      <a
+        href={site.links.whatsapp}
+        target="_blank"
+        rel="noopener noreferrer"
+        data-track="whatsapp"
+        data-track-location="action-bar"
+        class={itemClass}
+      >
+        <WhatsAppIcon size={20} class="text-[#128c4a]" />
+        WhatsApp
+      </a>
+    </li>
+    <li>
+      <a href="/contact" class:list={[itemClass, 'text-brand-700']}>
+        <CalendarCheck size={20} class="text-brand-600" />
+        Book
+      </a>
+    </li>
+  </ul>
+</nav>

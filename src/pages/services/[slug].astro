@@ -1,0 +1,153 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import { ArrowRight, Check, Phone } from '@lucide/astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/sections/PageHeader.astro';
+import CtaBand from '@/components/sections/CtaBand.astro';
+import ServiceIcon from '@/components/ui/ServiceIcon.astro';
+import WhatsAppIcon from '@/components/ui/WhatsAppIcon.astro';
+import { site } from '@/config/site';
+import { breadcrumbSchema, serviceSchema } from '@/lib/seo';
+
+export const getStaticPaths = (async () => {
+  const services = await getCollection('services');
+  return services.map((service) => ({ params: { slug: service.id }, props: { service } }));
+}) satisfies GetStaticPaths;
+
+interface Props {
+  service: CollectionEntry<'services'>;
+}
+
+const { service } = Astro.props;
+const { Content } = await render(service);
+const { title, summary, description, highlights, icon } = service.data;
+const path = `/services/${service.id}`;
+
+const otherServices = (await getCollection('services'))
+  .filter((other) => other.id !== service.id)
+  .sort((a, b) => a.data.order - b.data.order);
+
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Services', path: '/services' },
+  { name: title, path },
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  schema={[serviceSchema(title, description, path), breadcrumbSchema(crumbs)]}
+>
+  <PageHeader eyebrow="Services" title={title} lead={summary} crumbs={crumbs}>
+    <div class="mt-9 flex flex-col gap-3 sm:flex-row">
+      <a href="/contact" class="btn btn-primary group">
+        Book a free consultation
+        <ArrowRight size={18} class="transition-transform group-hover:translate-x-0.5" />
+      </a>
+      <a
+        href={site.links.call}
+        data-track="call"
+        data-track-location="service-header"
+        class="btn btn-secondary"
+      >
+        <Phone size={18} class="text-brand-600" />
+        {site.phones.primary.display}
+      </a>
+    </div>
+  </PageHeader>
+
+  <div class="container-page grid gap-14 pb-20 lg:grid-cols-12 lg:gap-16">
+    <div class="lg:col-span-8">
+      <section class="card p-6 sm:p-8" aria-labelledby="included-title">
+        <div class="flex items-center gap-4">
+          <span class="grid size-12 place-items-center rounded-2xl bg-brand-600 text-white shadow-[0_10px_24px_-10px_var(--color-brand-600)]">
+            <ServiceIcon name={icon} size={24} />
+          </span>
+          <h2 id="included-title" class="text-xl sm:text-2xl">
+            At a glance
+          </h2>
+        </div>
+        <ul class="mt-6 grid gap-3 sm:grid-cols-2">
+          {highlights.map((item) => (
+            <li class="flex gap-3 rounded-2xl bg-slate-50 p-4 font-medium text-slate-800">
+              <Check size={20} class="mt-0.5 shrink-0 text-brand-600" />
+              {item}
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <div class="prose prose-lg mt-12 max-w-none prose-slate prose-headings:font-display prose-headings:tracking-tight prose-h2:mt-12 prose-h2:text-3xl prose-h3:text-xl prose-a:text-brand-700 prose-strong:text-slate-900 prose-li:marker:text-brand-500">
+        <Content />
+      </div>
+    </div>
+
+    <aside class="lg:col-span-4" aria-label="Get help">
+      <div class="space-y-6 lg:sticky lg:top-28">
+        <div class="card overflow-hidden">
+          <div class="bg-brand-900 p-6 text-white sm:p-7">
+            <p class="font-display text-xl font-bold">Talk to an advisor</p>
+            <p class="mt-2 text-brand-100">
+              Free initial consultation. Tell us about your situation and we'll explain how we can
+              help.
+            </p>
+          </div>
+          <div class="flex flex-col gap-3 p-6 sm:p-7">
+            <a href="/contact" class="btn btn-primary w-full">
+              Book a consultation
+            </a>
+            <a
+              href={site.links.call}
+              data-track="call"
+              data-track-location="service-aside"
+              class="btn btn-secondary w-full"
+            >
+              <Phone size={18} class="text-brand-600" />
+              {site.phones.primary.display}
+            </a>
+            <a
+              href={site.links.whatsapp}
+              target="_blank"
+              rel="noopener noreferrer"
+              data-track="whatsapp"
+              data-track-location="service-aside"
+              class="btn btn-whatsapp w-full"
+            >
+              <WhatsAppIcon size={18} />
+              WhatsApp us
+            </a>
+          </div>
+        </div>
+
+        <nav class="card p-6 sm:p-7" aria-labelledby="other-services-title">
+          <p id="other-services-title" class="font-display font-bold text-slate-900">
+            Other services
+          </p>
+          <ul class="mt-4 divide-y divide-slate-100">
+            {otherServices.map((other) => (
+              <li>
+                <a
+                  href={`/services/${other.id}`}
+                  class="group flex items-center gap-3 py-3 font-medium text-slate-700 transition-colors hover:text-brand-700"
+                >
+                  <ServiceIcon name={other.data.icon} size={18} class="text-brand-600" />
+                  <span class="flex-1">{other.data.title}</span>
+                  <ArrowRight
+                    size={16}
+                    class="text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-brand-600"
+                  />
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      </div>
+    </aside>
+  </div>
+
+  <div class="pb-20">
+    <CtaBand />
+  </div>
+</BaseLayout>
