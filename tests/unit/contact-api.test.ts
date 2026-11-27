@@ -2,6 +2,16 @@ import type { APIContext } from 'astro';
 import { describe, expect, it, vi } from 'vitest';
 import { ALL, POST } from '@/pages/api/contact';
 
+// Vitest runs Vite in serve mode, where `astro:content` reads the dev data store that only
+// `astro dev` writes (`astro sync` and `astro check` write to node_modules/.astro instead).
+// Without this mock the handler sees an empty collection on a fresh checkout such as CI.
+vi.mock('astro:content', () => ({
+  getCollection: async () => [
+    { id: 'personal-and-corporate-tax', data: { shortTitle: 'Personal & corporate tax' } },
+    { id: 'tax-problem-resolution', data: { shortTitle: 'CRA & tax problems' } },
+  ],
+}));
+
 let ipCounter = 0;
 const uniqueIp = () => `203.0.113.${++ipCounter}`;
 
@@ -42,6 +52,12 @@ describe('POST /api/contact', () => {
     const response = await call({ ...valid, email: 'nope' }, { json: false });
     expect(response.status).toBe(303);
     expect(response.headers.get('location')).toBe('/contact/error');
+  });
+
+  it('only accepts services from the services collection', async () => {
+    const response = await call({ ...valid, service: 'crypto-mining' });
+    expect(response.status).toBe(400);
+    expect((await response.json()).errors).toHaveProperty('service');
   });
 
   it('accepts a valid enquiry (dev mode logs instead of emailing)', async () => {
