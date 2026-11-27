@@ -3,8 +3,9 @@
 Marketing website for [Matrix Tax Solutions](https://www.matrixtaxsolutions.ca), a tax and
 accounting practice in Barrie, Ontario.
 
-- **Fast:** pages are pre-rendered static HTML. Images are served as AVIF/WebP, fonts are
-  self-hosted, and pages ship almost no JavaScript.
+- **Fast:** pages are pre-rendered static HTML. Images are served as AVIF/WebP, and pages ship
+  almost no JavaScript. Only the heading font is a web font (self-hosted); body text uses the
+  platform UI font. Lighthouse mobile scores 99–100.
 - **Secure:** a strict, hash-based Content-Security-Policy with no `unsafe-inline`, plus security
   headers. The contact endpoint is hardened (validation, spam traps, rate limiting, CSRF origin
   check).

@@ -5,13 +5,18 @@ import ContactForm from '@/components/contact/ContactForm.astro';
 interface Props {
   /** Render the heading as the page's <h1> (on /contact) or as a section <h2>. */
   headingLevel?: 'h1' | 'h2';
+  class?: string;
 }
 
-const { headingLevel = 'h2' } = Astro.props;
+const { headingLevel = 'h2', class: className } = Astro.props;
 const Heading = headingLevel;
 ---
 
-<section id="contact" class="section bg-slate-50" aria-labelledby="contact-title">
+<section
+  id="contact"
+  class:list={['section bg-slate-50', className]}
+  aria-labelledby="contact-title"
+>
   <div class="container-page grid gap-12 lg:grid-cols-12 lg:gap-14">
     <div class="lg:col-span-5">
       <p class="eyebrow">Contact</p>
