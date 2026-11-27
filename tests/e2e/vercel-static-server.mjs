@@ -10,6 +10,7 @@ import { createServer } from 'node:http';
 import { readFile, stat } from 'node:fs/promises';
 import { extname, join, normalize, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { brotliCompressSync, gzipSync } from 'node:zlib';
 
 const repoRoot = fileURLToPath(new URL('../../', import.meta.url));
 const outputDir = join(repoRoot, '.vercel', 'output');
@@ -116,11 +117,23 @@ createServer(async (request, response) => {
     Object.assign(headers, notFoundRoute?.headers);
   }
 
-  const body = await readFile(file);
-  response.writeHead(status, {
-    'Content-Type': contentTypes[extname(file)] ?? 'application/octet-stream',
-    ...headers,
-  });
+  let body = await readFile(file);
+  const contentType = contentTypes[extname(file)] ?? 'application/octet-stream';
+
+  // Like Vercel, compress text responses (keeps local Lighthouse numbers realistic).
+  const accepts = String(request.headers['accept-encoding'] ?? '');
+  if (/^(text\/|application\/(json|xml|manifest)|image\/svg)/.test(contentType)) {
+    headers.Vary = 'Accept-Encoding';
+    if (accepts.includes('br')) {
+      body = brotliCompressSync(body);
+      headers['Content-Encoding'] = 'br';
+    } else if (accepts.includes('gzip')) {
+      body = gzipSync(body);
+      headers['Content-Encoding'] = 'gzip';
+    }
+  }
+
+  response.writeHead(status, { 'Content-Type': contentType, ...headers });
   response.end(request.method === 'HEAD' ? undefined : body);
 }).listen(port, () => {
   console.log(`Serving .vercel/output on http://localhost:${port}`);

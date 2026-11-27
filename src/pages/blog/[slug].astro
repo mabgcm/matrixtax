@@ -80,8 +80,10 @@ const cta =
           <time datetime={pubDate.toISOString()}>{formatDate(pubDate, lang)}</time>
           <span aria-hidden="true">·</span>
           <span>{t.minRead(readingMinutes(post.body))}</span>
-          <span aria-hidden="true">·</span>
-          <span>{site.name}</span>
+          <span aria-hidden="true" class="hidden sm:inline">
+            ·
+          </span>
+          <span class="hidden sm:inline">{site.name}</span>
         </p>
       </div>
     </header>

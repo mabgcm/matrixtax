@@ -86,16 +86,10 @@ export default defineConfig({
     responsiveStyles: true,
   },
 
+  // Only the display face is a web font. Body copy uses the platform UI font
+  // (SF Pro, Segoe UI, Roboto): high quality, zero bytes. A body web font cost
+  // ~200 KB on Turkish-language pages (latin-ext) and delayed first paint.
   fonts: [
-    {
-      provider: fontProviders.fontsource(),
-      name: 'Inter',
-      cssVariable: '--font-inter',
-      weights: ['400 700'],
-      styles: ['normal'],
-      subsets: ['latin', 'latin-ext'],
-      fallbacks: ['ui-sans-serif', 'system-ui', 'sans-serif'],
-    },
     {
       provider: fontProviders.fontsource(),
       name: 'Manrope',
