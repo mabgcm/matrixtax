@@ -43,8 +43,11 @@ function enhance(form: HTMLFormElement): void {
   // The browser's native bubbles are replaced by inline, accessible messages.
   form.noValidate = true;
 
-  const startedAt = form.elements.namedItem('started_at');
-  if (startedAt instanceof HTMLInputElement) startedAt.value = String(Date.now());
+  // Fill time is measured with a monotonic clock and sent as a duration, so a
+  // visitor whose system clock is wrong is never mistaken for a bot.
+  const readyAt = performance.now();
+  const fillTime = form.elements.namedItem('fill_ms');
+  let busy = false;
 
   const status = form.querySelector<HTMLElement>('[data-form-status]');
   const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]');
@@ -85,11 +88,22 @@ function enhance(form: HTMLFormElement): void {
 
   const focusFirstInvalid = () => form.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus();
 
-  const setBusy = (busy: boolean) => {
+  // aria-disabled instead of `disabled`: a disabled button drops keyboard focus
+  // to <body>, so the visitor would lose their place when an error appears.
+  const setBusy = (value: boolean) => {
+    busy = value;
     if (!submit) return;
-    submit.disabled = busy;
-    submit.toggleAttribute('data-busy', busy);
-    if (submitLabel) submitLabel.textContent = busy ? 'Sending…' : 'Send message';
+    submit.setAttribute('aria-disabled', String(value));
+    submit.toggleAttribute('data-busy', value);
+    if (submitLabel) submitLabel.textContent = value ? 'Sending…' : 'Send message';
+  };
+
+  const safely = (action: () => void) => {
+    try {
+      action();
+    } catch {
+      // Analytics or third-party widgets must never change what the visitor sees.
+    }
   };
 
   const validate = (): boolean => {
@@ -116,12 +130,16 @@ function enhance(form: HTMLFormElement): void {
 
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
+    if (busy) return;
     clearAll();
     if (!validate()) {
       focusFirstInvalid();
       return;
     }
 
+    if (fillTime instanceof HTMLInputElement) {
+      fillTime.value = String(Math.round(performance.now() - readyAt));
+    }
     const data = new FormData(form);
     setBusy(true);
     try {
@@ -133,7 +151,7 @@ function enhance(form: HTMLFormElement): void {
       const result = (await response.json().catch(() => null)) as ApiResponse | null;
 
       if (response.ok && result?.ok) {
-        trackLead(String(data.get('service') || 'other'));
+        safely(() => trackLead(String(data.get('service') || 'other')));
         form.reset();
         form.hidden = true;
         if (success) {
@@ -148,7 +166,7 @@ function enhance(form: HTMLFormElement): void {
         focusFirstInvalid();
       }
       showStatus(result?.message ?? GENERIC_ERROR);
-      window.turnstile?.reset();
+      safely(() => window.turnstile?.reset());
     } catch {
       showStatus(NETWORK_ERROR);
     } finally {

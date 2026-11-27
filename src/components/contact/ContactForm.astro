@@ -4,9 +4,10 @@ import { PUBLIC_TURNSTILE_SITE_KEY } from 'astro:env/client';
 import { CircleCheck, LoaderCircle, Send } from '@lucide/astro';
 import {
   FIELD_LIMITS,
+  FILL_TIME_FIELD,
   HONEYPOT_FIELD,
   OTHER_SERVICE,
-  STARTED_AT_FIELD,
+  PHONE_INPUT_PATTERN,
 } from '@/lib/contact/validation';
 import { site } from '@/config/site';
 
@@ -74,7 +75,7 @@ const field = (name: string) => `${formId}-${name}`;
           inputmode="tel"
           autocomplete="tel"
           maxlength={FIELD_LIMITS.phone.max}
-          pattern="[0-9+().\-\s]{7,30}"
+          pattern={PHONE_INPUT_PATTERN}
           data-pattern-message="Please enter a valid phone number, or leave it blank."
           aria-describedby={field('phone-error')}
           class="field-input"
@@ -128,10 +129,18 @@ const field = (name: string) => `${formId}-${name}`;
         <input type="text" name={HONEYPOT_FIELD} tabindex="-1" autocomplete="off" />
       </label>
     </div>
-    <input type="hidden" name={STARTED_AT_FIELD} value="" />
+    <input type="hidden" name={FILL_TIME_FIELD} value="" />
 
     {PUBLIC_TURNSTILE_SITE_KEY && (
-      <div class="cf-turnstile" data-sitekey={PUBLIC_TURNSTILE_SITE_KEY} data-size="flexible" />
+      <>
+        <div class="cf-turnstile" data-sitekey={PUBLIC_TURNSTILE_SITE_KEY} data-size="flexible" />
+        <noscript>
+          <p class="rounded-2xl bg-amber-50 p-4 text-sm text-amber-900 ring-1 ring-amber-200">
+            Our spam check needs JavaScript. Please enable it, or call us at{' '}
+            {site.phones.primary.display} or email {site.emails.primary}.
+          </p>
+        </noscript>
+      </>
     )}
 
     <div

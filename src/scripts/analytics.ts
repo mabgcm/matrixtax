@@ -59,8 +59,10 @@ function loadPixel(id: string): void {
   fbq('track', 'PageView');
 }
 
-function applyConsent(state: ConsentState | null): void {
+function applyConsent(stored: ConsentState | null): void {
   if (!pixelId) return;
+  // Global Privacy Control always wins, including over an earlier "Accept".
+  const state = hasGlobalPrivacyControl() ? 'denied' : stored;
   if (state === 'granted') {
     if (window.fbq) window.fbq('consent', 'grant');
     else loadPixel(pixelId);
@@ -90,8 +92,15 @@ function initConsentBanner(): void {
     banner.hidden = true;
   };
 
+  const gpc = hasGlobalPrivacyControl();
+  if (gpc) {
+    // The banner can still be opened from the footer; explain why there is no Accept.
+    banner.querySelector('[data-consent-gpc]')?.removeAttribute('hidden');
+    banner.querySelector('[data-consent="granted"]')?.setAttribute('hidden', '');
+  }
+
   if (getConsent() === null) {
-    if (hasGlobalPrivacyControl()) setConsent('denied');
+    if (gpc) setConsent('denied');
     else show();
   }
 
@@ -105,7 +114,7 @@ function initConsentBanner(): void {
   document.addEventListener('click', (event) => {
     if ((event.target as Element).closest('[data-consent-open]')) {
       show();
-      banner.querySelector<HTMLButtonElement>('[data-consent]')?.focus();
+      banner.querySelector<HTMLButtonElement>('[data-consent]:not([hidden])')?.focus();
     }
   });
 }

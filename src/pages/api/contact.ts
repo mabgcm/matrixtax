@@ -1,5 +1,6 @@
 import type { APIContext, APIRoute } from 'astro';
 import { getCollection } from 'astro:content';
+import { PUBLIC_TURNSTILE_SITE_KEY } from 'astro:env/client';
 import {
   CONTACT_FROM_EMAIL,
   CONTACT_TO_EMAIL,
@@ -8,7 +9,7 @@ import {
 } from 'astro:env/server';
 import { site } from '@/config/site';
 import { buildContactEmail, sendWithResend } from '@/lib/contact/email';
-import { createRateLimiter } from '@/lib/contact/rate-limit';
+import { createRateLimiter, rateLimitKey } from '@/lib/contact/rate-limit';
 import { verifyTurnstile } from '@/lib/contact/turnstile';
 import {
   OTHER_SERVICE,
@@ -22,6 +23,10 @@ export const prerender = false;
 
 const MAX_BODY_BYTES = 32 * 1024;
 const limiter = createRateLimiter({ limit: 5, windowMs: 10 * 60 * 1000 });
+
+// Verification runs only when the widget is also rendered; with just one of the
+// two keys set, every submission would otherwise fail.
+const turnstileEnabled = Boolean(TURNSTILE_SECRET_KEY && PUBLIC_TURNSTILE_SITE_KEY);
 
 const fallbackMessage = `You can also reach us at ${site.phones.primary.display} or ${site.emails.primary}.`;
 
@@ -85,7 +90,7 @@ export const POST: APIRoute = async (context) => {
   }
 
   const ip = clientIp(context);
-  const rate = limiter.check(ip ?? 'unknown');
+  const rate = limiter.check(rateLimitKey(ip));
   if (!rate.allowed) {
     return respond(context, {
       status: 429,
@@ -124,7 +129,7 @@ export const POST: APIRoute = async (context) => {
     });
   }
 
-  if (TURNSTILE_SECRET_KEY) {
+  if (turnstileEnabled && TURNSTILE_SECRET_KEY) {
     const token = form.get('cf-turnstile-response');
     const human = await verifyTurnstile(
       typeof token === 'string' ? token : null,
@@ -178,8 +183,9 @@ export const POST: APIRoute = async (context) => {
   try {
     await sendWithResend(RESEND_API_KEY, {
       ...email,
-      from: CONTACT_FROM_EMAIL ?? `${site.name} Website <onboarding@resend.dev>`,
-      to: CONTACT_TO_EMAIL ?? site.emails.primary,
+      // `||`, not `??`: a variable that is set but empty must fall back too.
+      from: CONTACT_FROM_EMAIL || `${site.name} Website <onboarding@resend.dev>`,
+      to: CONTACT_TO_EMAIL || site.emails.primary,
       replyTo: data.email,
     });
   } catch (error) {

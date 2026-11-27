@@ -16,7 +16,7 @@ export async function verifyTurnstile(
     const response = await fetchImpl('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
       method: 'POST',
       body,
-      signal: AbortSignal.timeout(5000),
+      signal: AbortSignal.timeout(3000),
     });
     if (!response.ok) return false;
     const result = (await response.json()) as { success?: boolean };

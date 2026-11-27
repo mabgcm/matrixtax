@@ -13,6 +13,32 @@ test.describe('navigation', () => {
     await expect(page).toHaveURL(/\/#faq$/);
   });
 
+  test('the closed mobile menu leaves no invisible layer over the page', async ({ page }) => {
+    await page.goto('/');
+    await expect(page.locator('#mobile-menu')).toHaveCSS('display', 'none');
+  });
+
+  test('mobile menu works in browsers without the Popover API', async ({ page, isMobile }) => {
+    test.skip(!isMobile, 'mobile only');
+    // Simulate e.g. iOS 16: no Popover API, so the popover attribute is inert.
+    await page.addInitScript(() => {
+      for (const name of ['showPopover', 'hidePopover', 'togglePopover']) {
+        delete (HTMLElement.prototype as unknown as Record<string, unknown>)[name];
+      }
+      document.addEventListener('DOMContentLoaded', () =>
+        document.getElementById('mobile-menu')?.removeAttribute('popover'),
+      );
+    });
+    await page.goto('/');
+    const menu = page.locator('#mobile-menu');
+    await expect(menu).toBeHidden();
+    await page.getByRole('button', { name: 'Open menu' }).click();
+    await expect(menu).toBeVisible();
+    await menu.getByRole('link', { name: 'FAQ' }).click();
+    await expect(menu).toBeHidden();
+    await expect(page).toHaveURL(/\/#faq$/);
+  });
+
   test('mobile quick-contact bar offers call, text and WhatsApp', async ({ page, isMobile }) => {
     test.skip(!isMobile, 'mobile only');
     await page.goto('/');
@@ -83,7 +109,8 @@ test.describe('contact form', () => {
     expect(postBody).toContain('jane@example.com');
     expect(postBody).toContain('personal-and-corporate-tax');
     // The honeypot travels empty and the fill-time stamp is set by the script.
-    expect(postBody).toMatch(/name="started_at"\r\n\r\n\d{13}/);
+    // The fill-time is a duration from a monotonic clock, not a wall-clock timestamp.
+    expect(postBody).toMatch(/name="fill_ms"\r\n\r\n\d{1,9}\r\n/);
   });
 
   test('displays server-side validation errors', async ({ page }) => {
@@ -165,6 +192,27 @@ base.describe('advertising consent', () => {
     await page.waitForLoadState('networkidle');
     await expect(page.getByRole('region', { name: 'Your privacy' })).toBeHidden();
     expect(await page.evaluate((key) => localStorage.getItem(key), CONSENT_KEY)).toBe('denied');
+  });
+
+  base('Global Privacy Control overrides an earlier Accept', async ({ page }) => {
+    const pixelRequests: string[] = [];
+    page.on('request', (request) => {
+      if (request.url().includes('connect.facebook.net')) pixelRequests.push(request.url());
+    });
+    await page.addInitScript((key) => {
+      localStorage.setItem(key, 'granted');
+      Object.defineProperty(Navigator.prototype, 'globalPrivacyControl', { get: () => true });
+    }, CONSENT_KEY);
+
+    await page.goto('/');
+    await page.waitForLoadState('networkidle');
+    expect(pixelRequests).toEqual([]);
+
+    // Reopening the banner explains why Accept is not offered.
+    await page.getByRole('button', { name: 'Cookie preferences' }).click();
+    const banner = page.getByRole('region', { name: 'Your privacy' });
+    await expect(banner.getByText('Global Privacy Control setting is on')).toBeVisible();
+    await expect(banner.getByRole('button', { name: 'Accept' })).toBeHidden();
   });
 
   base('cookie preferences can be reopened from the footer', async ({ page }) => {

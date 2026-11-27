@@ -99,7 +99,7 @@ export async function sendWithResend(
       text: message.text,
       html: message.html,
     }),
-    signal: AbortSignal.timeout(8000),
+    signal: AbortSignal.timeout(5000),
   });
 
   if (!response.ok) {

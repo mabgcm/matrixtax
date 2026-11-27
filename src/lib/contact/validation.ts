@@ -11,12 +11,26 @@ export const FIELD_LIMITS = {
   message: { min: 10, max: 5000 },
 } as const;
 
-/** Honeypot field: invisible to people, irresistible to bots. */
-export const HONEYPOT_FIELD = 'website';
-/** Timestamp (ms) set by the browser when the form becomes interactive. */
-export const STARTED_AT_FIELD = 'started_at';
+/**
+ * Honeypot field: invisible to people, irresistible to bots. The name is
+ * deliberately meaningless so browser and password-manager autofill (which
+ * match names like "website" or "url") never fill it for a real visitor.
+ */
+export const HONEYPOT_FIELD = 'mts_hp';
+/**
+ * Milliseconds the visitor spent on the form, measured by the browser with a
+ * monotonic clock (performance.now). It is a duration, not a timestamp, so it
+ * does not depend on the visitor's system clock matching the server's.
+ */
+export const FILL_TIME_FIELD = 'fill_ms';
 /** Humans need more than this to fill in the form. */
 export const MIN_FILL_TIME_MS = 2500;
+
+/**
+ * HTML `pattern` for the phone input. Browsers compile `pattern` with the `v`
+ * (unicodeSets) flag, where `(` `)` and `-` must be escaped inside a class.
+ */
+export const PHONE_INPUT_PATTERN = String.raw`[0-9+\(\)\.\-\s]{7,30}`;
 
 export const OTHER_SERVICE = 'other';
 
@@ -101,16 +115,14 @@ export function parseContactForm(
 
 /**
  * Bot heuristics. Bots that trip these get a fake success response so they
- * learn nothing. A missing timestamp is allowed: visitors without JavaScript
- * never get one.
+ * learn nothing, so this must never flag a real person:
+ * - A missing fill time is allowed: visitors without JavaScript never send one.
+ * - Anything that is not a plain non-negative integer is treated as unknown.
  */
-export function looksLikeSpam(form: FormData, now: number = Date.now()): boolean {
+export function looksLikeSpam(form: FormData): boolean {
   if (text(form, HONEYPOT_FIELD).trim() !== '') return true;
 
-  const startedAt = Number(text(form, STARTED_AT_FIELD));
-  if (Number.isFinite(startedAt) && startedAt > 0) {
-    const elapsed = now - startedAt;
-    if (elapsed < MIN_FILL_TIME_MS) return true;
-  }
-  return false;
+  const raw = text(form, FILL_TIME_FIELD).trim();
+  if (!/^\d{1,9}$/.test(raw)) return false;
+  return Number(raw) < MIN_FILL_TIME_MS;
 }

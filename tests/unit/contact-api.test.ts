@@ -61,7 +61,7 @@ describe('POST /api/contact', () => {
 
   it('pretends to succeed for bots without processing them', async () => {
     const info = vi.spyOn(console, 'info').mockImplementation(() => {});
-    const response = await call({ ...valid, website: 'http://spam.example' });
+    const response = await call({ ...valid, mts_hp: 'http://spam.example' });
     expect(response.status).toBe(200);
     expect(await response.json()).toEqual({ ok: true });
     expect(info).not.toHaveBeenCalled();

@@ -145,7 +145,7 @@
 
   /* Buttons ---------------------------------------------------------------- */
   .btn {
-    @apply inline-flex min-h-12 items-center justify-center gap-2 rounded-full px-6 text-[0.95rem] font-semibold whitespace-nowrap transition duration-200 select-none disabled:cursor-not-allowed disabled:opacity-60;
+    @apply inline-flex min-h-12 items-center justify-center gap-2 rounded-full px-6 text-[0.95rem] font-semibold whitespace-nowrap transition duration-200 select-none disabled:cursor-not-allowed disabled:opacity-60 aria-disabled:cursor-wait aria-disabled:opacity-70;
   }
 
   .btn-primary {
@@ -240,6 +240,9 @@
  * Mobile menu (native popover): full-screen sheet with enter/exit motion.
  * ------------------------------------------------------------------------- */
 .mobile-menu {
+  /* Hidden unless open. Without this, browsers lacking the Popover API (e.g.
+     iOS 16) would render an invisible full-screen layer that swallows taps. */
+  display: none;
   position: fixed;
   inset: 0;
   width: 100%;
@@ -263,8 +266,17 @@
 }
 
 .mobile-menu:popover-open {
+  display: block;
   opacity: 1;
   transform: none;
+}
+
+/* Fallback toggled by src/scripts/nav.ts when the Popover API is missing. */
+.mobile-menu.is-open {
+  display: block;
+  opacity: 1;
+  transform: none;
+  z-index: 60;
 }
 
 @starting-style {
@@ -275,6 +287,10 @@
 }
 
 html:has(.mobile-menu:popover-open) {
+  overflow: hidden;
+}
+
+html:has(.mobile-menu.is-open) {
   overflow: hidden;
 }
 

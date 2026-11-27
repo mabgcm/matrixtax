@@ -1,8 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import {
+  FILL_TIME_FIELD,
   HONEYPOT_FIELD,
   MIN_FILL_TIME_MS,
-  STARTED_AT_FIELD,
+  PHONE_INPUT_PATTERN,
   looksLikeSpam,
   parseContactForm,
 } from '@/lib/contact/validation';
@@ -96,21 +97,44 @@ describe('parseContactForm', () => {
 });
 
 describe('looksLikeSpam', () => {
-  const now = 1_000_000;
-
   it('flags a filled honeypot', () => {
-    expect(looksLikeSpam(form({ [HONEYPOT_FIELD]: 'https://spam.example' }), now)).toBe(true);
+    expect(looksLikeSpam(form({ [HONEYPOT_FIELD]: 'https://spam.example' }))).toBe(true);
   });
 
   it('flags submissions faster than a human could type', () => {
-    expect(looksLikeSpam(form({ [STARTED_AT_FIELD]: String(now - 500) }), now)).toBe(true);
+    expect(looksLikeSpam(form({ [FILL_TIME_FIELD]: '500' }))).toBe(true);
+    expect(looksLikeSpam(form({ [FILL_TIME_FIELD]: '0' }))).toBe(true);
   });
 
   it('accepts normal submissions, including ones without JavaScript', () => {
-    expect(
-      looksLikeSpam(form({ [STARTED_AT_FIELD]: String(now - MIN_FILL_TIME_MS - 1) }), now),
-    ).toBe(false);
-    expect(looksLikeSpam(form({}), now)).toBe(false);
-    expect(looksLikeSpam(form({ [STARTED_AT_FIELD]: 'garbage' }), now)).toBe(false);
+    expect(looksLikeSpam(form({ [FILL_TIME_FIELD]: String(MIN_FILL_TIME_MS) }))).toBe(false);
+    expect(looksLikeSpam(form({ [FILL_TIME_FIELD]: '60000' }))).toBe(false);
+    expect(looksLikeSpam(form({}))).toBe(false);
+  });
+
+  // Regression: the old check compared a browser timestamp with the server
+  // clock, so a visitor whose clock ran fast was silently dropped as spam.
+  it.each(['-120000', 'garbage', '1.5e3', '9999999999', ' '])(
+    'never treats a malformed fill time (%j) as spam',
+    (value) => {
+      expect(looksLikeSpam(form({ [FILL_TIME_FIELD]: value }))).toBe(false);
+    },
+  );
+});
+
+describe('PHONE_INPUT_PATTERN', () => {
+  // Browsers compile the HTML pattern attribute with the `v` flag.
+  const compiled = new RegExp(`^(?:${PHONE_INPUT_PATTERN})$`, 'v');
+
+  it('is valid under the unicodeSets (v) flag', () => {
+    expect(compiled).toBeInstanceOf(RegExp);
+  });
+
+  it.each(['(705) 555-0123', '+1 705.555.0123', '7055550123'])('accepts %j', (value) => {
+    expect(compiled.test(value)).toBe(true);
+  });
+
+  it.each(['call me', '123', 'x'.repeat(31)])('rejects %j', (value) => {
+    expect(compiled.test(value)).toBe(false);
   });
 });

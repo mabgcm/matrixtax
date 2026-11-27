@@ -53,7 +53,13 @@ const routesBeforeFilesystem = config.routes.slice(
 const notFoundRoute = config.routes.find((route) => route.src === '/404');
 
 async function resolveFile(pathname) {
-  const safe = normalize(decodeURIComponent(pathname)).replace(/^([/\\]*\.\.)+/, '');
+  let decoded;
+  try {
+    decoded = decodeURIComponent(pathname);
+  } catch {
+    return null; // malformed percent-encoding
+  }
+  const safe = normalize(decoded).replace(/^([/\\]*\.\.)+/, '');
   for (const candidate of [safe, join(safe, 'index.html'), `${safe}.html`]) {
     const full = join(staticDir, candidate);
     if (!full.startsWith(staticDir + sep) && full !== staticDir) continue;
@@ -81,10 +87,11 @@ createServer(async (request, response) => {
     if (!match) continue;
     const location = route.headers?.Location;
     if (route.status && location) {
-      response.writeHead(route.status, {
-        ...headers,
-        Location: location.replace(/\$(\d+)/g, (_, index) => match[Number(index)] ?? ''),
-      });
+      const target = location
+        .replace(/\$(\d+)/g, (_, index) => match[Number(index)] ?? '')
+        // Never emit a protocol-relative URL ("//host") — that is an open redirect.
+        .replace(/^\/{2,}/, '/');
+      response.writeHead(route.status, { ...headers, Location: target });
       response.end();
       return;
     }
