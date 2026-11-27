@@ -114,7 +114,7 @@ cards, the form's service list and the footer.
 - **Defences:**
   - Astro's origin check (CSRF)
   - 32 KB body limit
-  - 5 requests per 10 minutes per IP
+  - 5 requests per 10 minutes per IP (IPv6 grouped by /64)
   - Honeypot field and minimum fill time; bots receive a fake success
   - Strict server-side validation, with line breaks stripped from header fields
   - HTML-escaped email body
